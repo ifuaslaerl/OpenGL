@@ -10,7 +10,7 @@ To install the project and help it's developing, please follow this commands bef
 First is needed to work in the container:
 
 <code>docker pull accetto/ubuntu-vnc-xfce-opengl-g3</code> \
-<code>docker create --rm -it root accetto/ubuntu-vnc-xfce-opengl-g3</code>
+<code>docker create -it root accetto/ubuntu-vnc-xfce-opengl-g3</code>
 
 In the container, go to <code>/home/headless/Documents</code> \
 Then, copy-paste the following commands:
