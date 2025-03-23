@@ -2,6 +2,7 @@
     "files.associations": {
         "cmath": "cpp",
         "complex": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "iosfwd": "cpp"
     }
 }

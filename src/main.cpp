@@ -11,6 +11,49 @@ Vector gravity(Particle p){
     return v;
 }
 
+void escape_exit(GLFWwindow* window, int key, int scancode, int action, int mods){
+    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
+        glfwSetWindowShouldClose(window, true);
+    }
+}
+
+void check_colision(std::vector<Particle> &objects){ // TODO Optmize this
+    // Check with Rectangular boundaries  
+    
+    const int n = objects.size();
+    
+    for(Particle& p : objects){
+        p.check_colision_with_boundaries();
+    }
+
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            if(i==j) continue;
+            Particle &p1 = objects[i];
+            Particle &p2 = objects[j];
+            p1.check_colision_with_particle(p2);
+        }
+    }
+
+}
+
+void pipeline(std::vector<Particle> &objects, std::vector<Field> &forces){ // TODO is this optmizable?
+
+    check_colision(objects);
+    for(Particle &p : objects) p.draw();
+    for(Particle &p : objects) for(Field &f : forces) p.set_speed(f.apply(p));
+    for(Particle &p : objects) p.update_pos();
+
+    // TODO save data in a csv to analyse in python 
+    // (in order to do this, please create a directory "data", fix .gitignore and makefile to adapt this)
+
+    // for(Particle &p : objects){
+    //     std::cout << p.center << std::endl;
+    //     std::cout << p.velocity << std::endl;
+    // }
+
+}
+
 int main(){
 
     if(!glfwInit()){
@@ -30,20 +73,25 @@ int main(){
     }
 
     glfwMakeContextCurrent(window); // Não sei oq faz ainda
+    glfwSetKeyCallback(window, escape_exit);
 
-    Field field(gravity);
-    Particle p(Point(0, 0), 50);
-    p.set_speed(Vector(0, 100));
+    Field g(gravity);
+    Particle p1(Point(100, 0), 50), p2(Point(-100, 0), 50);
+    RGB red = {1.0f, 0.0f, 0.0f}, blue = {0.0f, 0.0f, 1.0f}, white = {1, 1, 1};
+
+    p1.set_speed(Vector(10, 0));
+    p1.set_color(white);
+
+    p2.set_speed(Vector(-10, 0));
+    p2.set_color(white);
+
+    std::vector<Field> forces = {g};
+    std::vector<Particle> objects = {p1, p2};
 
     while(!glfwWindowShouldClose(window)){
         glClear(GL_COLOR_BUFFER_BIT);
 
-        p.draw();
-        p.update_pos();
-        p.set_speed(field.apply(p));
-
-        std::cout << "speed: " << p.velocity << std::endl;
-        std::cout << "pos: " << p.center << std::endl;
+        pipeline(objects, forces);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
