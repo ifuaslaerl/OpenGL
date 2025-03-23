@@ -4,94 +4,12 @@
 #include <math.h>
 #include <iostream>
 
-#define WIDTH 1000
-#define HEIGHT 500
-#define TITLE "Simulador"
+#include "../includes/types.h"
 
-typedef Vector(*FieldFunction)(Point);
-typedef long double ld;
-
-const ld PI = acos(-1);
-
-class Vector{
-
-    public:
-
-    ld x, y;
-
-    Vector(ld x, ld y) : x(x), y(y) {}
-
-    void draw(){ // TODO
-    }
-
-    Vector operator+(const Vector &v) const {
-        return Vector(x+v.x, y+v.y);
-    }
-
-};
-
-class Point: public Vector{
-
-    public:
-
-    Vector p;
-
-    Point(ld x, ld y): p(x, y) { // TODO RESOLVER
-
-    }
-
-    void draw(){
-        glVertex2f(x/WIDTH, y/HEIGHT);
-    }
-
-    Point operator+(const Vector &v) const {
-        return Point(x+v.x, y+v.y);
-    }
-
-};
-
-class Particle{
-
-    public:
-
-    Point center;
-    ld radius;
-    int resolution;
-
-    Particle(Point center, ld radius, int resolution=100):
-        center(center), radius(radius), resolution(resolution) {}
-
-    void draw(){
-        ld ang=0;
-        const ld step = 2*PI/resolution;
-        for(int i=0; i<resolution; i++){
-            Point p(center.x + radius*cos(ang),
-                    center.y + radius*sin(ang));
-            Point q(center.x + radius*cos(ang+step),
-                    center.y + radius*sin(ang+step));
-            ang += step;
-
-            glBegin(GL_TRIANGLES);
-                center.draw();
-                p.draw();
-                q.draw();
-            glEnd();
-        }
-    }
-
-    Particle operator+(const Vector &v) const {
-        return Particle(center+v, radius);
-    }
-
-};
-
-class Field{
-
-    Field() {}
-
-    Vector map(Point p){}
-
-};
+Vector gravity(Particle p){
+    Vector v = p.velocity + Vector(0,-1);
+    return v;
+}
 
 int main(){
 
@@ -113,15 +31,19 @@ int main(){
 
     glfwMakeContextCurrent(window); // Não sei oq faz ainda
 
+    Field field(gravity);
     Particle p(Point(0, 0), 50);
-    Vector velocity(0, 10), aceleration(0, -0.1);
+    p.set_speed(Vector(0, 100));
 
     while(!glfwWindowShouldClose(window)){
         glClear(GL_COLOR_BUFFER_BIT);
 
-        p = p+velocity;
         p.draw();
-        velocity = velocity + aceleration;
+        p.update_pos();
+        p.set_speed(field.apply(p));
+
+        std::cout << "speed: " << p.velocity << std::endl;
+        std::cout << "pos: " << p.center << std::endl;
 
         glfwSwapBuffers(window);
         glfwPollEvents();
