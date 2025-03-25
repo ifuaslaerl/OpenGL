@@ -1,7 +1,5 @@
 TARGET = simulador
 
-ROOT = /home/ifuaslaerl/Documentos/prog/OpenGL
-
 SRC_DIR = src
 BUILD_DIR = build
 INCLUDE_DIR = include
@@ -27,7 +25,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 objs: $(TARGET)
 	@echo "Objects made."
 
-run: $(TARGET)
+run: objs
 	@echo "Runing aplication."
 	@./$(TARGET)
 	@echo "Aplication finished."
@@ -36,5 +34,9 @@ clean:
 	@echo "Cleaning objects"
 	@rm -rf $(BUILD_DIR) $(TARGET)
 	@echo "Objects cleaned."
+
+debug: clean
+debug: FLAGS += -DDEBUG 
+debug: run
 
 .PHONY: clean run help

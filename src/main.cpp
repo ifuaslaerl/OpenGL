@@ -3,6 +3,7 @@
 #include <vector>
 #include <math.h>
 #include <iostream>
+#include <iomanip>
 
 #include "../includes/types.h"
 
@@ -40,18 +41,28 @@ void check_colision(std::vector<Particle> &objects){ // TODO Optmize this
 void pipeline(std::vector<Particle> &objects, std::vector<Field> &forces){ // TODO is this optmizable?
 
     check_colision(objects);
-    for(Particle &p : objects) p.draw();
     for(Particle &p : objects) for(Field &f : forces) p.set_speed(f.apply(p));
     for(Particle &p : objects) p.update_pos();
+    for(Particle &p : objects) p.draw();
 
     // TODO save data in a csv to analyse in python 
     // (in order to do this, please create a directory "data", fix .gitignore and makefile to adapt this)
 
-    // for(Particle &p : objects){
-    //     std::cout << p.center << std::endl;
-    //     std::cout << p.velocity << std::endl;
-    // }
-
+    #ifdef DEBUG
+        std::cout << std::fixed << std::setprecision(0);
+        for(Particle &p: objects){
+            std::cout << "Particle " << p.id << " - " << p.name << ":\t";
+        }
+        std::cout << std::endl;
+        for(Particle &p: objects){
+            std::cout << "\tPosition: " << p.center << "\t";
+        }
+        std::cout << std::endl;
+        for(Particle &p: objects){
+            std::cout << "\tVelocity: " << p.velocity << "\t";
+        }
+        std::cout << std::endl;
+    #endif
 }
 
 int main(){
@@ -72,18 +83,20 @@ int main(){
         return -1;
     }
 
-    glfwMakeContextCurrent(window); // Não sei oq faz ainda
+    glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, escape_exit);
 
     Field g(gravity);
     Particle p1(Point(100, 0), 50), p2(Point(-100, 0), 50);
-    RGB red = {1.0f, 0.0f, 0.0f}, blue = {0.0f, 0.0f, 1.0f}, white = {1, 1, 1};
+    RGB red = {1.0f, 0.0f, 0.0f}, blue = {0.0f, 0.0f, 1.0f};
 
-    p1.set_speed(Vector(10, 0));
-    p1.set_color(white);
+    p1.set_speed(Vector(10, 30));
+    p1.set_color(red);
+    p1.set_name("Vermelho");
 
-    p2.set_speed(Vector(-10, 0));
-    p2.set_color(white);
+    p2.set_speed(Vector(-30, 10));
+    p2.set_color(blue);
+    p2.set_name("Azul");
 
     std::vector<Field> forces = {g};
     std::vector<Particle> objects = {p1, p2};

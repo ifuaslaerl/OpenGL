@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
+#include <string>
 
 #define WIDTH 1000
 #define HEIGHT 1000
@@ -23,7 +24,7 @@ class Vector{
         ld x, y;
 };
 
-typedef float RGB[3];
+typedef long double RGB[3];
 
 class Point{
     public:
@@ -46,12 +47,15 @@ class Particle{
         void draw();
         void set_speed(Vector);
         void set_color(RGB);
+        void set_name(std::string);
         void update_pos();
         void check_colision_with_boundaries();
         void check_colision_with_particle(Particle&);
         Point center;
         Vector velocity=Vector(0, 0);
         ld mass=1, charge=0;
+        int id;
+        std::string name="";
     private:
         ld radius;
         int resolution;

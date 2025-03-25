@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+
+# VsCode shit
+.vscode/
+
+# Temporary files
+data/
+build/
+simulador
